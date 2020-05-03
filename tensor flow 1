@@ -1,0 +1,70 @@
+import tensorflow as tf
+
+import matplotlib.pyplot as plt
+
+
+import numpy as np
+
+
+observation = 1000
+xs=np.random.uniform(low=-10,high=10,size=(observation,1))
+zs=np.random.uniform(low=-10,high=10,size=(observation,1))
+
+generated_inputs = np.column_stack((xs,zs))
+noise = np.random.uniform(-1,1,(observation,1))
+
+generated_targets = 2*xs-3*zs+5+noise
+
+np.savez('TF_intro',inputs=generated_inputs,targets=generated_targets)
+
+training_data=np.load('TF_intro.npz')
+
+input_size = 2
+output_size =1
+model =tf.keras.Sequential([
+                            tf.keras.layers.Dense(output_size)])
+
+
+
+model.compile(optimizer='sgd',loss='mean_squared_error')
+
+
+model.fit(training_data['inputs'],training_data['targets'],epochs=200,verbose=2)
+
+model.layers[0].get_weights()
+
+weights=model.layers[0].get_weights()[0]
+weights
+
+
+
+bais=model.layers[0].get_weights()[1]
+bais
+
+model.predict_on_batch(training_data['inputs']).round(1)
+
+training_data['targets'].round(1)
+
+plt.plot(np.squeeze(model.predict_on_batch(training_data['inputs'])),np.squeeze(training_data['targets']))
+plt.xlabel('outputs')
+plt.ylabel('targets')
+plt.show()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
